@@ -1,5 +1,6 @@
 namespace FulStackDeveloperTask.App.Model
 {
+    using Models;
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
@@ -7,10 +8,8 @@ namespace FulStackDeveloperTask.App.Model
     using System.Data.Entity.Spatial;
 
     [Table("COUNTRY")]
-    public partial class Country
+    public partial class Country : BaseModel
     {
-        [Column("ID")]
-        public int Id { get; set; }
 
         [Required]
         [StringLength(10)]
@@ -51,8 +50,9 @@ namespace FulStackDeveloperTask.App.Model
         public long Population { get; set; }
 
         [Required]
-        [StringLength(50)]
-        [Column("REGION")]
-        public string Region { get; set; }
+        [Column("REGIONID")]
+        public int RegionId { get; set; }
+
+        public virtual Region Region { get; set; }
     }
 }

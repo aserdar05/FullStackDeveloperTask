@@ -1,4 +1,5 @@
-﻿using System.Web;
+﻿using FulStackDeveloperTask.App.Utils;
+using System.Web;
 using System.Web.Mvc;
 
 namespace FulStackDeveloperTask.App
@@ -7,7 +8,7 @@ namespace FulStackDeveloperTask.App
     {
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
-            filters.Add(new HandleErrorAttribute());
+            filters.Add(new ErrorHandlerAttribute());
         }
     }
 }

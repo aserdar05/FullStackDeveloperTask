@@ -2,32 +2,83 @@
     ViewBag.Title = "Home Page";
 }
 
+<h2>Ülke Listesi</h2>
+<p>
+    @Html.ActionLink("Yeni Kayıt", "Edit")
+</p>
 <table id="tblCountries" class="table">
-    <thead>
-        <tr>
-            <th>Ülke Adı</th>
-            <th>Ülke Tam Adı</th>
-            <th>Ülke Kodu</th>
-            <th>Para Birimi</th>
-            <th>Bayrak</th>
-        </tr>
-    </thead>
 </table>
 
 
 <script src="~/Scripts/jquery-1.10.2.min.js"></script>
 <script type="text/javascript">
 
+    var UrlConst = {
+        GetCountriesUrl : '@Url.Action("GetCountries")',
+        EditCountryUrl  : '@Url.Action("Edit", new { id = "_id" })',
+        DeleteCountryUrl: '@Url.Action("Delete", new { id = "_id" })'
+    }
+
+    var ScreenEvents = {
+        EditCountryClicked: function () {
+            var country = $(this).data("country-id");
+            window.location.href = UrlConst.EditCountryUrl.replace("_id", country);
+        },
+        DeleteCountryClicked: function () {
+            var country = $(this).data("country-id");
+            window.location.href = UrlConst.DeleteCountryUrl.replace("_id", country);
+        }
+    }
+
     $(function () {
+        if ($.fn.dataTable) {
+            $.extend($.fn.dataTable.defaults.oLanguage, {
+                "sProcessing": "İşleniyor...",
+                "sLengthMenu": "Sayfada _MENU_ Kayıt Göster",
+                "sZeroRecords": "Eşleşen Kayıt Bulunmadı",
+                "sInfo": "  _TOTAL_ Kayıttan _START_ - _END_ Arası Kayıtlar",
+                "sInfoEmpty": "",
+                "sInfoFiltered": "",
+                "sInfoPostFix": "",
+                "sSearch": "",
+                "sUrl": "",
+                "oPaginate": {
+                    "sFirst": "İlk",
+                    "sPrevious": "Önceki",
+                    "sNext": "Sonraki",
+                    "sLast": "Son"
+                }
+            });
+        }
         var oTable = $('#tblCountries').dataTable({
-            "sAjaxSource": '@Url.Action("GetCountries")',
+            "sAjaxSource": UrlConst.GetCountriesUrl,
+            // "bProcessing": true,
+            "bServerSide": true,
+            "bDestroy": true,
+            "aaSorting": [[3, "desc"]],
+            "autoWidth": true,
             "aoColumns": [
-              { "mData": "Name"     , "Title": "Ülke Adı" },
-              { "mData": "FullName" , "Title": "Ülke Tam Adı" },
-              { "mData": "Code"     , "Title": "Ülke Kodu" },
-              { "mData": "Currency" , "Title": "Para Birimi" },
-              { "mData": "Flag"     , "Title": "Bayrak" }
-            ]
+              { "mData": "Name"         , "sTitle": "Ülke Adı" },
+              { "mData": "FullName"     , "sTitle": "Ülke Tam Adı" },
+              { "mData": "Code"         , "sTitle": "Ülke Kodu" },
+              { "mData": "Population"   , "sTitle": "Nüfus" },
+              { "mData": "Language"     , "sTitle": "Dil" },
+              {
+                  "sTitle": "",
+                  "sClass": "text-right",
+                  "bSearchable": false,
+                  "bSortable": false,
+                  "mData": "Id",
+                  "mRender": function (country, type, row) {
+                      return "<a class='btnEditCountry' data-country-id='" + country + "'>Detay</a>" + " | " +
+                                "<a class='btnDeleteCountry' data-country-id='" + country + "'>Sil</a>";;
+                  }
+              }
+            ],
+            "fnDrawCallback": function (settings, json) {
+                $('.btnEditCountry').click(ScreenEvents.EditCountryClicked);
+                $('.btnDeleteCountry').click(ScreenEvents.DeleteCountryClicked);
+            }
         });
     });
 

@@ -1,13 +1,10 @@
 ﻿
+using FullStackDeveloperTask.App.ViewModel;
 using FullStackDeveloperTask.UI.Database;
-using FullStackDeveloperTask.UI.Models;
-using FulStackDeveloperTask.App.Model;
+using FullStackDeveloperTask.UI.Infrastructure;
 using FulStackDeveloperTask.App.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using FulStackDeveloperTask.App.ViewModel;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 
 namespace FullStackDeveloperTask.UI.Controllers
@@ -31,13 +28,16 @@ namespace FullStackDeveloperTask.UI.Controllers
             return View();
         }
 
-        public ActionResult GetCountries(DataTableModel model) {
-            List<Country> countryList = DatabaseContext.CountryRepository.GetCountryList();
+        public ActionResult GetCountries(DataTableModel table)
+        {
+            Util.TableSortByRequest(table, table.iSortCol_0, table.sSortDir_0);
+            CountryGridVM response = DatabaseContext.CountryRepository.GetCountryList(table);
             return Json(new
             {
-                iTotalRecords = 97,
-                iTotalDisplayRecords = 3,
-                aaData = countryList
+                sEcho = table.sEcho,
+                iTotalRecords = table.iDisplayLength,
+                iTotalDisplayRecords = response.TotalCount,
+                aaData = response.CountryList
             }, JsonRequestBehavior.AllowGet);
         }
     }

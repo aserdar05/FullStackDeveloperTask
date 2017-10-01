@@ -12,27 +12,45 @@ namespace FulStackDeveloperTask.App.Controllers
     {
         public CountryGridVM GetCountries([FromUri]DataTableModel model)
         {
-            return CountryOperation.Instance.GetCountries(model);
+            using (CountryOperation operation = new CountryOperation())
+            {
+                return operation.GetCountries(model);
+            }
         }
 
-        public ExecuteResult Execute(UIModel model)
-        {
-            CountryOperation operation = CountryOperation.Instance;
-            CountryVM vm = model as CountryVM;
-            switch (model.OperationType)
+        public CountryVM Get(int id) {
+            using (CountryOperation operation = new CountryOperation())
             {
-                case OperationType.Save:
-                    return operation.Save<Country>(vm.Country);
-                case OperationType.Update:
-                    return operation.Update<Country>(vm.Country);
-                case OperationType.Delete:
-                    return operation.Delete<Country>(vm.Country);
-                default:
-                    return new ExecuteResult
-                    {
-                        Succeeded = false,
-                        ResultMessage = "İşlem tipi hatalı"
-                    };
+                CountryVM model = new CountryVM
+                {
+                    Country = operation.Get(id)
+                };
+                return model;
+            }
+        }
+
+        [HttpPost]
+        public ExecuteResult Execute([FromBody]CountryVM model)
+        {
+            using (CountryOperation operation = new CountryOperation())
+            {
+                switch (model.OperationType)
+                {
+                    case OperationType.Save:
+                        operation.Save(model.Country);
+                        break;
+                    case OperationType.Update:
+                        operation.Update(model.Country);
+                        break;
+                    case OperationType.Delete:
+                        operation.Delete(model.Country);
+                        break;
+                }
+                return new ExecuteResult
+                {
+                    Succeeded = true,
+                    ResultMessage = "İşleminiz gerçekleştirilmiştir."
+                };
             }
         }
     }

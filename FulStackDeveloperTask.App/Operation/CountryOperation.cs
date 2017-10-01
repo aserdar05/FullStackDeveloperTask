@@ -13,13 +13,11 @@ using System.Data.Entity;
 
 namespace FulStackDeveloperTask.App.Operation
 {
-    public class CountryOperation : BaseOperation
+    public class CountryOperation : BaseOperation<Country>
     {
-        public static CountryOperation Instance {
-            get {
-                return new CountryOperation();
-            }
-        }
+
+        public CountryOperation() : base(new CountryDbContext()) {}
+
         public CountryGridVM GetCountries(DataTableModel table)
         {
             try

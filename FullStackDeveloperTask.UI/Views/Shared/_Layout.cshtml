@@ -26,6 +26,14 @@
         </div>
     </div>
     <div class="container body-content">
+        @if (TempData["AppError"] != null)
+        {
+            <div class="alert alert-danger" role="alert">@TempData["AppError"]</div>
+        }
+        @if (TempData["AppSuccess"] != null)
+        {
+            <div class="alert alert-success" role="alert">@TempData["AppSuccess"]</div>
+        }
         @RenderBody()
         <hr />
         <footer>

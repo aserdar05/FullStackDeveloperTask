@@ -5,10 +5,5 @@ using System.Web;
 
 namespace FulStackDeveloperTask.App.Models
 {
-    public enum ExecuteType
-    {
-        Save,
-        Update,
-        Delete
-    }
+
 }

@@ -19,11 +19,21 @@ namespace FullStackDeveloperTask.UI.Database.Repository
             return this.GetType().Name;
         }
 
-        protected T Get<T>(int id)
+        protected T Get<T>(int id, string methodName="Get")
         {
             WebClient client = new WebClient();
             client.Headers["Accept"] = "application/json";
-            string url = string.Format(AppConfig.ApiUrl + this.GetApiController() + "/Get/{0}", id);
+            string url = string.Format(AppConfig.ApiUrl + this.GetApiController() + "/" + methodName + "/{0}", id);
+            string jsonString = client.DownloadString(new Uri(url));
+            T result = JsonConvert.DeserializeObject<T>(jsonString);
+            return result;
+        }
+
+        protected T Get<T>(string methodName = "Get")
+        {
+            WebClient client = new WebClient();
+            client.Headers["Accept"] = "application/json";
+            string url = string.Format(AppConfig.ApiUrl + this.GetApiController() + "/" + methodName);
             string jsonString = client.DownloadString(new Uri(url));
             T result = JsonConvert.DeserializeObject<T>(jsonString);
             return result;

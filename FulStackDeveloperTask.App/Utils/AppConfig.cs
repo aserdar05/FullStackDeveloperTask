@@ -36,5 +36,23 @@ namespace FulStackDeveloperTask.App.Utils
                 return 128;
             }
         }
+
+
+        public static int YellowLineCount
+        {
+            get
+            {
+                return 5;
+            }
+        }
+
+        public static bool RenderFlagOnGrid
+        {
+            get
+            {
+                return true;
+            }
+        }
+
     }
 }

@@ -68,5 +68,8 @@
         public int RegionId { get; set; }
 
         public virtual Region Region { get; set; }
+
+        [NotMapped]
+        public virtual string Base64FlagData { get; set; }
     }
 }

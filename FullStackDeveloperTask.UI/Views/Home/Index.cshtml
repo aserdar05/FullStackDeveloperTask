@@ -1,5 +1,8 @@
-﻿@{
+﻿@using FulStackDeveloperTask.App.Utils
+
+@{
     ViewBag.Title = "Home Page";
+    long population = (long)ViewData["MinYellowPopulation"];
 }
 
 <h2>Ülke Listesi</h2>
@@ -30,6 +33,11 @@
         }
     }
 
+    var ScreenData = {
+        MinYellowPopulation: '@population',
+        RenderFlagOnGrid : '@AppConfig.RenderFlagOnGrid' == 'True'
+    }
+
     $(function () {
         if ($.fn.dataTable) {
             $.extend($.fn.dataTable.defaults.oLanguage, {
@@ -52,17 +60,30 @@
         }
         var oTable = $('#tblCountries').dataTable({
             "sAjaxSource": UrlConst.GetCountriesUrl,
-            // "bProcessing": true,
+            "bProcessing": true,
             "bServerSide": true,
+            "searchDelay": 2000,
             "bDestroy": true,
             "aaSorting": [[3, "desc"]],
             "autoWidth": true,
             "aoColumns": [
-              { "mData": "Name"         , "sTitle": "Ülke Adı" },
-              { "mData": "FullName"     , "sTitle": "Ülke Tam Adı" },
-              { "mData": "Code"         , "sTitle": "Ülke Kodu" },
-              { "mData": "Population"   , "sTitle": "Nüfus" },
-              { "mData": "Language"     , "sTitle": "Dil" },
+              { "mData": "Name"         , "sTitle": "Ülke Adı"      , "sName": "Name" },
+              { "mData": "FullName"     , "sTitle": "Ülke Tam Adı"  , "bSortable": false },
+              //{ "mData": "Code"         , "sTitle": "Ülke Kodu"     , "bSortable": false },
+              { "mData": "Population"   , "sTitle": "Nüfus"         , "sName": "Population" },
+              { "mData": "Language"     , "sTitle": "Dil"           , "bSortable": false },
+              { "mData": "Region.Name"  , "sTitle": "Bulunduğu Kıta", "bSortable": false },
+              {
+                  "sTitle": "Bayrak",
+                  "sClass": "text-right",
+                  "bSearchable": false,
+                  "bSortable": false,
+                  "mData": "FlagStr",
+                  "bVisible": ScreenData.RenderFlagOnGrid,
+                  "mRender": function (country, type, row) {
+                      return "<img src='data:image/gif;base64," + row.Base64FlagData + "'/>";
+                  }
+              },
               {
                   "sTitle": "",
                   "sClass": "text-right",
@@ -78,6 +99,13 @@
             "fnDrawCallback": function (settings, json) {
                 $('.btnEditCountry').click(ScreenEvents.EditCountryClicked);
                 $('.btnDeleteCountry').click(ScreenEvents.DeleteCountryClicked);
+            },
+            "fnCreatedRow": function (row, data, index) {
+                if(data.Population >= ScreenData.MinYellowPopulation)
+                    $(row).css({ "background-color": "yellow" });
+
+                //if (index < 5)
+                //    $(row).css({ "background-color": "yellow" });
             }
         });
     });

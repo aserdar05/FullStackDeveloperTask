@@ -28,5 +28,10 @@ namespace FullStackDeveloperTask.UI.Database.Repository
         {
             return base.Get<CountryVM>(id);
         }
+
+        public long GetMinYellowPopulation()
+        {
+            return base.Get<long>("GetMinYellowPopulation");
+        }
     }
 }

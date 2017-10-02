@@ -17,6 +17,8 @@ namespace FullStackDeveloperTask.UI.Controllers
     {
         public ActionResult Index()
         {
+            long minYellowPopulation = DatabaseContext.CountryRepository.GetMinYellowPopulation();
+            ViewData["MinYellowPopulation"] = minYellowPopulation;
             return View();
         }
 

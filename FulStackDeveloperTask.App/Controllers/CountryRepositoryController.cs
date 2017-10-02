@@ -21,6 +21,13 @@ namespace FulStackDeveloperTask.App.Controllers
             }
         }
 
+        public long GetMinYellowPopulation() {
+            using (CountryOperation operation = new CountryOperation())
+            {
+                return operation.GetMinYellowPopulation();
+            }
+        }
+
         public CountryVM Get(int id) {
             CountryVM model = null;
             using (CountryOperation operation = new CountryOperation())

@@ -10,6 +10,7 @@ using FulStackDeveloperTask.App.Utils;
 using FullStackDeveloperTask.App.ViewModel;
 using System.Web.Mvc;
 using System.Data.Entity;
+using System.IO;
 
 namespace FulStackDeveloperTask.App.Operation
 {
@@ -23,6 +24,7 @@ namespace FulStackDeveloperTask.App.Operation
             CountryGridVM result = new CountryGridVM();
             using (CountryDbContext context = new CountryDbContext())
             {
+                //5. büyük nüfusa sahip ülke alınıyor
                 IQueryable<Country> countryQuery = context.CountryList.Include("Region");
 
                 if (!string.IsNullOrEmpty(table.sSearch))
@@ -40,8 +42,19 @@ namespace FulStackDeveloperTask.App.Operation
                 countryQuery = countryQuery.Skip(table.iDisplayStart).Take(table.iDisplayLength);
 
                 result.CountryList = countryQuery.ToList();
+                if (AppConfig.RenderFlagOnGrid){
+                    result.CountryList.ForEach(c => c.Base64FlagData = Convert.ToBase64String(File.ReadAllBytes(AppConfig.FlagPath + string.Format(c.Flag, AppConfig.FlagResolution))));
+                }
             }
             return result;
+        }
+
+        public long GetMinYellowPopulation()
+        {
+            using (CountryDbContext context = new CountryDbContext())
+            {
+                return context.CountryList.OrderByDescending(c => c.Population).Skip(AppConfig.YellowLineCount - 1).Take(1).Select(c => c.Population).FirstOrDefault();
+            }
         }
 
         public string GetFlagName(int id)

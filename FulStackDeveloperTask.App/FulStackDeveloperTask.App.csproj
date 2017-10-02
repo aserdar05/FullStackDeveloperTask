@@ -131,7 +131,6 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\CountryRepositoryController.cs" />
     <Compile Include="Controllers\RegionRepositoryController.cs" />
-    <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Database\CountryDbContext.cs" />
     <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\Country.cs" />

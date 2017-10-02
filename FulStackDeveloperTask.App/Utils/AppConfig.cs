@@ -15,5 +15,26 @@ namespace FulStackDeveloperTask.App.Utils
                 return ConfigurationManager.AppSettings.Get("Log4NetFile");
             }
         }
+        public static string FlagPath
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings.Get("FlagPath");
+            }
+        }
+        public static string ApiUrl
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings.Get("ApiUrl");
+            }
+        }
+
+        public static int FlagResolution 
+        { 
+            get{
+                return 128;
+            }
+        }
     }
 }

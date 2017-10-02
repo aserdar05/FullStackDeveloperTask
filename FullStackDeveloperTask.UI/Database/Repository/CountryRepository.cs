@@ -1,6 +1,7 @@
 ﻿using FullStackDeveloperTask.App.ViewModel;
 using FulStackDeveloperTask.App.Model;
 using FulStackDeveloperTask.App.Models;
+using FulStackDeveloperTask.App.Utils;
 using FulStackDeveloperTask.App.ViewModel;
 using Newtonsoft.Json;
 using System;
@@ -15,8 +16,8 @@ namespace FullStackDeveloperTask.UI.Database.Repository
         public CountryGridVM GetCountryList(DataTableModel model) {
             WebClient client = new WebClient();
             client.Headers["Accept"] = "application/json";
-            string url = string.Format(base.ApiUrl + "Country/GetCountries?iColumns={0}&iDisplayLength={1}&iDisplayStart={2}&iSortingCols={3}&sColumns={4}" +
-                "&sEcho={5}&SingleSortDirection={6}&SingleSortingColumn={7}&,sSearch={8}", model.iColumns, model.iDisplayLength, model.iDisplayStart,
+            string url = string.Format(AppConfig.ApiUrl + base.GetApiController() + "/GetCountries?iColumns={0}&iDisplayLength={1}&iDisplayStart={2}&iSortingCols={3}&sColumns={4}" +
+                "&sEcho={5}&SingleSortDirection={6}&SingleSortingColumn={7}&sSearch={8}", model.iColumns, model.iDisplayLength, model.iDisplayStart,
                  model.iSortingCols, model.sColumns, model.sEcho, model.SingleSortDirection, model.SingleSortingColumn, model.sSearch);
             string returnedString = client.DownloadString(new Uri(url));
             CountryGridVM vm = JsonConvert.DeserializeObject<CountryGridVM>(returnedString);
@@ -25,12 +26,7 @@ namespace FullStackDeveloperTask.UI.Database.Repository
 
         public CountryVM Get(int id)
         {
-            WebClient client = new WebClient();
-            client.Headers["Accept"] = "application/json";
-            string url = string.Format(base.ApiUrl + "Country/Get/{0}", id);
-            string returnedString = client.DownloadString(new Uri(url));
-            CountryVM vm = JsonConvert.DeserializeObject<CountryVM>(returnedString);
-            return vm;
+            return base.Get<CountryVM>(id);
         }
     }
 }

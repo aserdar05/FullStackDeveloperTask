@@ -19,6 +19,11 @@ namespace FulStackDeveloperTask.App.Operation
             this.Context = context;
             this.DbSet = context.Set<TEntity>();
         }
+        
+        public List<TEntity> GetAllEntities()
+        {
+            return this.DbSet.ToList();
+        }
 
         public TEntity Get(int id)
         {

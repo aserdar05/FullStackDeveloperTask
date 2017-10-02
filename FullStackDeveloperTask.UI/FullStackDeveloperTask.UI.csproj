@@ -164,6 +164,7 @@
     <Compile Include="Database\DatabaseContext.cs" />
     <Compile Include="Database\Repository\BaseRepository.cs" />
     <Compile Include="Database\Repository\CountryRepository.cs" />
+    <Compile Include="Database\Repository\RegionRepository.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

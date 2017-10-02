@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FulStackDeveloperTask.App.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -33,10 +34,10 @@ namespace FullStackDeveloperTask.UI.Infrastructure
                 filterContext.Result = new JsonResult
                 {
                     JsonRequestBehavior = JsonRequestBehavior.AllowGet,
-                    Data = new
+                    Data = new ExecuteResult
                     {
                         Succeeded = false,
-                        Message = filterContext.Exception.Message
+                        ResultMessage = filterContext.Exception.Message
                     }
                 };
             }

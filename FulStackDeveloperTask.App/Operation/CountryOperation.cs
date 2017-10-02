@@ -20,36 +20,38 @@ namespace FulStackDeveloperTask.App.Operation
 
         public CountryGridVM GetCountries(DataTableModel table)
         {
-            try
+            CountryGridVM result = new CountryGridVM();
+            using (CountryDbContext context = new CountryDbContext())
             {
-                CountryGridVM result = new CountryGridVM();
-                using (CountryDbContext context = new CountryDbContext())
+                IQueryable<Country> countryQuery = context.CountryList.Include("Region");
+
+                if (!string.IsNullOrEmpty(table.sSearch))
                 {
-                    IQueryable<Country> countryQuery = context.CountryList.Include("Region");
-
-                    if (!string.IsNullOrEmpty(table.sSearch))
-                    {
-                        string searchText = table.sSearch.ToLower();
-                        countryQuery = countryQuery.Where(c => c.CapitalCity.Contains(searchText) || c.Name.Contains(searchText) ||
-                            c.FullName.Contains(searchText) || c.Code.Contains(searchText) || c.Region.Name.Contains(searchText));
-                    }
-                    result.TotalCount = countryQuery.Count();
-                    if (!string.IsNullOrEmpty(table.SingleSortingColumn))
-                        countryQuery = countryQuery.OrderByField(table.SingleSortingColumn, table.SingleSortDirection);
-                    else
-                        countryQuery = countryQuery.OrderByDescending(m => m.Population);
-
-                    countryQuery = countryQuery.Skip(table.iDisplayStart).Take(table.iDisplayLength);
-
-                    result.CountryList = countryQuery.ToList();
+                    string searchText = table.sSearch.ToLower();
+                    countryQuery = countryQuery.Where(c => c.CapitalCity.Contains(searchText) || c.Name.Contains(searchText) ||
+                        c.FullName.Contains(searchText) || c.Code.Contains(searchText) || c.Region.Name.Contains(searchText));
                 }
-                return result;
-            }
-            catch (Exception exc)
-            {
+                result.TotalCount = countryQuery.Count();
+                if (!string.IsNullOrEmpty(table.SingleSortingColumn))
+                    countryQuery = countryQuery.OrderByField(table.SingleSortingColumn, table.SingleSortDirection);
+                else
+                    countryQuery = countryQuery.OrderByDescending(m => m.Population);
 
-                throw;
+                countryQuery = countryQuery.Skip(table.iDisplayStart).Take(table.iDisplayLength);
+
+                result.CountryList = countryQuery.ToList();
             }
+            return result;
+        }
+
+        public string GetFlagName(int id)
+        {
+            string flagName = null;
+            using (CountryDbContext context = new CountryDbContext())
+            {
+                flagName = context.CountryList.Where(c => c.Id == id).Select(c => c.Flag).FirstOrDefault();
+            }
+            return flagName;
         }
 
         //protected override ExecuteResult Update(CountryVM model) {

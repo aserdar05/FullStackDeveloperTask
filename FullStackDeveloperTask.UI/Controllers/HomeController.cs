@@ -8,6 +8,8 @@ using FulStackDeveloperTask.App.ViewModel;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using FullStackDeveloperTask.UI.Infrastructure.Extension;
+using System.Web;
+using FulStackDeveloperTask.App.Utils;
 
 namespace FullStackDeveloperTask.UI.Controllers
 {
@@ -20,6 +22,7 @@ namespace FullStackDeveloperTask.UI.Controllers
 
         public ActionResult Edit(int? id)
         {
+            ViewData["RegionList"] = DatabaseContext.RegionRepository.GetAll();
             if (id.HasValue) {
                 CountryVM model = DatabaseContext.CountryRepository.Get(id.Value);
                 return View(model);
@@ -28,27 +31,47 @@ namespace FullStackDeveloperTask.UI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Edit(CountryVM model)
+        public async Task<ActionResult> Edit([Bind(Exclude = "Flag")]CountryVM model, HttpPostedFileBase flag)
         {
-            ExecuteResult result = null;
-            if (model.Country.Id == 0)
+            ModelState.Remove("Country.Id");
+            if (model.Country.Id == 0 && flag == null) {
+                ModelState.AddModelError("CustomError", "Ülkenin bayrağını seçmelisiniz!");
+            }
+            if (flag != null)
             {
-                await DatabaseContext.CountryRepository.Save(model);
+                model.Flag = flag.InputStream.ToByteArray();
+            }
+            else {
+                model.Flag = DatabaseContext.CountryRepository.Get(model.Country.Id).Flag;
+            }
+            if (ModelState.IsValid)
+            {
+                ExecuteResult result = null;
+                if (model.Country.Id == 0)
+                {
+                    result = await DatabaseContext.CountryRepository.Save(model);
+                }
+                else
+                {
+                    result = await DatabaseContext.CountryRepository.Update(model);
+                }
+                if (result.Succeeded)
+                {
+                    this.AddSuccessMessage(result.ResultMessage);
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ModelState.AddModelError("CustomError", result.ResultMessage);
+                    ViewData["RegionList"] = DatabaseContext.RegionRepository.GetAll();
+                    return View(model);
+                }
             }
             else
             {
-                await DatabaseContext.CountryRepository.Update(model);
-            }
-            if (result.Succeeded)
-            {
-                this.AddSuccessMessage(result.ResultMessage);
-                return RedirectToAction("Index");
-            }
-            else {
-                this.AddErrorMessage(result.ResultMessage);
+                ViewData["RegionList"] = DatabaseContext.RegionRepository.GetAll();
                 return View(model);
             }
-
         }
 
         public ActionResult Delete(int id)
@@ -58,9 +81,19 @@ namespace FullStackDeveloperTask.UI.Controllers
         }
 
         [HttpPost]
-        public ActionResult Delete()
+        public async Task<ActionResult> Delete(Country model)
         {
-            return View();
+            ExecuteResult result = await DatabaseContext.CountryRepository.Delete(new CountryVM { Country = model });
+            if (result.Succeeded)
+            {
+                this.AddSuccessMessage(result.ResultMessage);
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                this.AddErrorMessage(result.ResultMessage);
+                return RedirectToAction("Delete", new { id=model.Id });
+            }
         }
 
         public ActionResult GetCountries(DataTableModel table)
